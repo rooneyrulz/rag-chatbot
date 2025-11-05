@@ -70,7 +70,7 @@ export default function RAGChatBot() {
           </PromptInputBody>
           <PromptInputToolbar>
             <PromptInputTools />
-            <PromptInputSubmit />
+            <PromptInputSubmit status={status} />
           </PromptInputToolbar>
         </PromptInput>
       </div>
