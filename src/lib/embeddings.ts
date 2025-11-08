@@ -13,6 +13,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
       model: "mixedbread-ai/mxbai-embed-large-v1",
       inputs: input,
     });
+    console.log("embedding generated: ", response);
     return response as number[];
   } catch (error) {
     console.error("Error generating embedding:", error);
