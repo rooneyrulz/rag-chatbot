@@ -1,3 +1,5 @@
+export const EMBEDDING_MODEL = "mixedbread-ai/mxbai-embed-large-v1";
+
 import { HfInference } from "@huggingface/inference";
 
 if (!process.env.HUGGINGFACE_ACCESS_TOKEN) {
@@ -10,7 +12,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
   const input = text.replace(/\n/g, " ");
   try {
     const response = await hf.featureExtraction({
-      model: "mixedbread-ai/mxbai-embed-large-v1",
+      model: EMBEDDING_MODEL,
       inputs: input,
     });
     console.log("embedding generated: ", response);
@@ -25,7 +27,7 @@ export async function generateEmbeddings(texts: string[]): Promise<number[][]> {
   const inputs = texts.map((text) => text.replace(/\n/g, " "));
   try {
     const response = await hf.featureExtraction({
-      model: "mixedbread-ai/mxbai-embed-large-v1",
+      model: EMBEDDING_MODEL,
       inputs,
     });
     return response as number[][];
