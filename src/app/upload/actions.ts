@@ -7,10 +7,12 @@ import { generateEmbeddings } from "@/lib/embeddings";
 import { chunkContent } from "@/lib/chunking";
 
 function cleanText(text: string): string {
-  // Remove null bytes and other non-printable characters
   return text
-    .replace(/\x00/g, "") // Remove null bytes
-    .replace(/[\x00-\x1F\x7F-\x9F]/g, "") // Remove other control characters
+    .replace(/\x00/g, "")
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/[ \t]+/g, " ")
     .trim();
 }
 

@@ -2,60 +2,52 @@ import {
   streamText,
   UIMessage,
   convertToModelMessages,
-  tool,
   InferUITools,
   UIDataTypes,
-  stepCountIs,
 } from "ai";
 import { groq } from "@ai-sdk/groq";
-import { z } from "zod";
-import { searchDocuments } from "@/lib/search";
+import { formatSearchResults, searchDocuments } from "@/lib/search";
 
-const tools = {
-  searchKnowledgeBase: tool({
-    description: "Search the knowledge base for relevant information",
-    inputSchema: z.object({
-      query: z.string().describe("The search query to find relevant documents"),
-    }),
-    execute: async ({ query }) => {
-      try {
-        const results = await searchDocuments(query, 3, 0.5);
-
-        if (results.length === 0) {
-          return "No relevant documents found";
-        }
-
-        console.log("Tool call results:", results);
-
-        const formattedResults = results
-          ?.map((r, i) => `${i + 1}. ${r.content}`)
-          ?.join("\n\n");
-
-        return formattedResults;
-      } catch (error) {
-        console.error(error);
-        return "Error searching knowledge base";
-      }
-    },
-  }),
-};
-
-export type ChatTools = InferUITools<typeof tools>;
+export type ChatTools = InferUITools<Record<string, never>>;
 export type ChatMessage = UIMessage<never, UIDataTypes, ChatTools>;
+
+function getLastUserQuery(messages: ChatMessage[]): string {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const message = messages[i];
+    if (message.role !== "user") continue;
+
+    return message.parts
+      .filter(
+        (part): part is { type: "text"; text: string } => part.type === "text"
+      )
+      .map((part) => part.text)
+      .join("\n")
+      .trim();
+  }
+
+  return "";
+}
 
 export async function POST(req: Request) {
   try {
     const { messages }: { messages: ChatMessage[] } = await req.json();
+    const query = getLastUserQuery(messages);
+    const results = query ? await searchDocuments(query, 8) : [];
+    const context = formatSearchResults(results);
 
     const result = streamText({
       model: groq("llama-3.1-8b-instant"),
       messages: convertToModelMessages(messages),
-      tools,
-      system: `You are a helpful assistant with access to a knowledge base. 
-          When users ask questions, search the knowledge base for relevant information.
-          Always search before answering if the question might relate to uploaded documents.
-          Base your answers on the search results when available. Give concise answers that correctly answer what the user is asking for. Do not flood them with all the information from the search results.`,
-      stopWhen: stepCountIs(2),
+      system: `You are a helpful assistant that answers questions based on uploaded PDF documents.
+
+Use ONLY the retrieved context below to answer. Follow these rules:
+- Answer directly and concisely using facts from the context.
+- If the context does not contain enough information, say "I couldn't find relevant information in the uploaded documents."
+- Do not invent facts or use knowledge outside the provided context.
+- When helpful, mention which part of the context your answer comes from.
+
+Retrieved context:
+${context}`,
     });
 
     return result.toUIMessageStreamResponse();
