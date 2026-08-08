@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RAG Chatbot",
-  description: "RAG Chatbot designed to chat with your PDF files",
+  title: "Contexo",
+  description: "Contexo is designed to chat with your PDF files",
 };
 
 export default function RootLayout({
