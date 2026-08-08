@@ -52,7 +52,7 @@ export default function PDFUpload() {
                 });
                 event.target.value = "";
                 if (result.documentId) {
-                    router.refresh();
+                    router.push(`/chat/${result.documentId}`)
                 }
             } else {
                 setMessages({
