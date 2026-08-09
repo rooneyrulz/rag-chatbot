@@ -52,7 +52,7 @@ export default async function Home() {
   // the auth middleware anyway, so sending them there first just adds a
   // redirect hop). Signed-in users go straight to their most useful place:
   // an existing chat if they have one, otherwise the upload flow.
-  let ctaHref = "/sign-up";
+  let ctaHref = "/upload";
   let ctaLabel = "Get started";
 
   if (userId) {
