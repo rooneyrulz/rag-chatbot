@@ -12,7 +12,14 @@ import {
     uniqueIndex,
     uuid,
     vector,
+    customType
 } from "drizzle-orm/pg-core";
+
+const tsvector = customType<{ data: string }>({
+  dataType() {
+    return "tsvector";
+  },
+});
 
 export const documentStatusEnum = pgEnum("document_status", [
     "processing",
@@ -75,6 +82,7 @@ export const documentChunks = pgTable(
         userId: text("user_id").notNull(),
         chunkIndex: integer("chunk_index").notNull(),
         content: text("content").notNull(),
+        contentTsv: tsvector("content_tsv"),
         // Free-form per-chunk metadata: page number, char offsets, section
         // heading, source sheet/slide, etc. Cheap to capture at ingest time,
         // expensive to backfill later once you want citations in the UI.
