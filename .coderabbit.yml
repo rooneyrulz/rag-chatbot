@@ -1,0 +1,8 @@
+# .coderabbit.yaml
+reviews:
+  auto_review:
+    enabled: true
+    # The default branch (main) is always included. 
+    # Add 'dev' here to expand reviews to PRs targeting your development branch.
+    base_branches:
+      - "dev"
