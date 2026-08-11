@@ -26,8 +26,8 @@ A full-stack Retrieval-Augmented Generation (RAG) chatbot built with Next.js, pg
 
 <div align="center">
 
-| Home | Upload | Chat |
-|:---:|:---:|:---:|
+| Home | Upload | Chat | Chat list |
+|:---:|:---:|:---:|:---:|
 | ![Home page](./docs/screenshots/home.png) | ![Upload page](./docs/screenshots/upload.png) | ![Chat page](./docs/screenshots/chat.png) | ![Chat-list page](./docs/screenshots/chat_list.png) |
 
 </div>
