@@ -125,7 +125,7 @@ Every step above — from which document a chunk belongs to, to who owns it — 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/your-repo.git
+git clone https://github.com/rooneyrulz/rag-chatbot.git
 cd your-repo
 ```
 
