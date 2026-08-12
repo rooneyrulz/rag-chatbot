@@ -11,7 +11,7 @@ A full-stack Retrieval-Augmented Generation (RAG) chatbot built with Next.js, pg
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#-contributing)
-[![Stars](https://img.shields.io/github/stars/your-username/your-repo?style=social)](https://github.com/your-username/your-repo)
+[![Stars](https://img.shields.io/github/stars/your-username/your-repo?style=social)](https://github.com/rooneyrulz/rag-chatbot)
 
 </div>
 
