@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Navigation() {
     return (
@@ -29,6 +30,7 @@ export default function Navigation() {
                 </Link>
 
                 <div className="flex items-center gap-2">
+                    <ThemeToggle />
                     <SignedIn>
                         <Button
                             variant="ghost"
