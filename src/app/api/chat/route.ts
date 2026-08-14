@@ -83,7 +83,7 @@ export async function POST(req: Request) {
         const context = formatSearchResults(results);
 
         const result = streamText({
-            model: groq("llama-3.1-8b-instant"),
+            model: groq("openai/gpt-oss-120b"),
             messages: convertToModelMessages(messages),
             system: `You are a helpful assistant that answers questions based on uploaded PDF documents.
 
