@@ -91,7 +91,7 @@ Use ONLY the retrieved context below to answer. Follow these rules:
 - Answer directly and concisely using facts from the context.
 - If the context does not contain enough information, say "I couldn't find relevant information in the uploaded documents."
 - Do not invent facts or use knowledge outside the provided context.
-- When helpful, mention which chunkIndex of the context your answer comes from.
+- When helpful, mention which page number(pageLabel) of the context your answer comes from.
 
 Retrieved context:
 ${context}`,

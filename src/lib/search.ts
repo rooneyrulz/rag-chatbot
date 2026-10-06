@@ -13,7 +13,7 @@ export type SearchResult = {
     // search exists to catch (an exact term an embedding blurred past
     // relevance, e.g. a specific figure, name, or acronym).
     similarity: number | null;
-    page: number | null;
+    pageNumber: number | null;
     // Reciprocal Rank Fusion score — the actual signal used to rank and
     // limit final results. Not a probability or similarity; a fused rank
     // score with no fixed scale, higher is better.
@@ -24,7 +24,7 @@ type CandidateRow = {
     id: string;
     content: string;
     chunk_index: number;
-    page: number | null;
+    pageNumber: number | null;
     similarity?: number;
 };
 
@@ -51,7 +51,7 @@ function reciprocalRankFusion(
         {
             content: string;
             chunk_index: number;
-            page: number | null;
+            pageNumber: number | null;
             similarity: number | null;
             score: number;
         }
@@ -61,7 +61,7 @@ function reciprocalRankFusion(
         const entry = fused.get(row.id) ?? {
             content: row.content,
             chunk_index: row.chunk_index,
-            page: row.page,
+            pageNumber: row.pageNumber,
             similarity: null,
             score: 0,
         };
@@ -74,7 +74,7 @@ function reciprocalRankFusion(
         const entry = fused.get(row.id) ?? {
             content: row.content,
             chunk_index: row.chunk_index,
-            page: row.page,
+            pageNumber: row.pageNumber,
             similarity: null,
             score: 0,
         };
@@ -116,9 +116,9 @@ export async function searchDocuments(
                 content: documentChunks.content,
                 chunk_index: documentChunks.chunkIndex,
                 similarity,
-                page: sql<
+                pageNumber: sql<
                     number | null
-                >`(${documentChunks.metadata}->>'page')::int`,
+                >`(${documentChunks.metadata}->>'pageNumber')::int`,
             })
             .from(documentChunks)
             .where(scope)
@@ -130,9 +130,9 @@ export async function searchDocuments(
                 id: documentChunks.id,
                 content: documentChunks.content,
                 chunk_index: documentChunks.chunkIndex,
-                page: sql<
+                pageNumber: sql<
                     number | null
-                >`(${documentChunks.metadata}->>'page')::int`,
+                >`(${documentChunks.metadata}->>'pageNumber')::int`,
             })
             .from(documentChunks)
             .where(
@@ -166,8 +166,10 @@ export function formatSearchResults(results: SearchResult[]): string {
 
     return results
         .map((result, index) => {
-            const pageLabel = result.page ? ` p.${result.page}` : "";
-            return `[${index + 1}]${pageLabel} (relevance: ${result.score.toFixed(4)})\n${result.content} chunkIndex: ${result.chunk_index}`;
+            const pageLabel = result.pageNumber
+                ? ` p.${result.pageNumber}`
+                : "";
+            return `[${index + 1}]${pageLabel} (relevance: ${result.score.toFixed(4)})\n${result.content}`;
         })
         .join("\n\n---\n\n");
 }
