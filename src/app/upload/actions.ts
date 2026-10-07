@@ -20,6 +20,50 @@ function cleanText(text: string): string {
         .trim();
 }
 
+async function extractPDFPages(buffer: Buffer) {
+    const pages: {
+        pageNumber: number;
+        content: string;
+    }[] = [];
+
+    let pageNumber = 0;
+
+    await pdf(buffer, {
+        pagerender: async (pageData) => {
+            pageNumber++;
+
+            const textContent = await pageData.getTextContent({
+                normalizeWhitespace: true,
+                disableCombineTextItems: false,
+            });
+
+            let lastY: number | undefined;
+            let text = "";
+
+            for (const item of textContent.items) {
+                const currentY = item.transform[5];
+
+                if (lastY === undefined || lastY === currentY) {
+                    text += item.str;
+                } else {
+                    text += "\n" + item.str;
+                }
+
+                lastY = currentY;
+            }
+
+            pages.push({
+                pageNumber,
+                content: cleanText(text),
+            });
+
+            return text;
+        },
+    });
+
+    return pages;
+}
+
 export async function processPDFFile(formData: FormData) {
     const { userId } = await auth();
     if (!userId) {
@@ -51,13 +95,20 @@ export async function processPDFFile(formData: FormData) {
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
 
-        const data = await pdf(buffer);
-        if (!data.text || data.text.trim().length === 0) {
-            return { success: false, error: "Could not extract text from PDF" };
+        const pages = await extractPDFPages(buffer);
+
+        const validPages = pages.filter(
+            (page) => page.content.trim().length > 0,
+        );
+
+        if (validPages.length === 0) {
+            return {
+                success: false,
+                error: "Could not extract text from PDF",
+            };
         }
 
-        const content = cleanText(data.text);
-        const chunks = await chunkContent(content);
+        const chunks = await chunkContent(validPages);
 
         if (!chunks || chunks.length === 0) {
             return {
@@ -78,7 +129,9 @@ export async function processPDFFile(formData: FormData) {
 
         documentId = document.id;
 
-        const embeddings = await generateEmbeddings(chunks);
+        const embeddings = await generateEmbeddings(
+            chunks.map((chunk) => chunk.content),
+        );
 
         if (embeddings.length !== chunks.length) {
             throw new Error("Embedding count does not match chunk count");
@@ -88,7 +141,8 @@ export async function processPDFFile(formData: FormData) {
             documentId: document.id,
             userId,
             chunkIndex: index,
-            content: chunk,
+            content: chunk.content,
+            metadata: chunk.metadata,
             embedding: embeddings[index],
             embeddingModel: EMBEDDING_MODEL,
         }));
