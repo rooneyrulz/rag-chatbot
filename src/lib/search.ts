@@ -166,10 +166,20 @@ export function formatSearchResults(results: SearchResult[]): string {
 
     return results
         .map((result, index) => {
-            const pageLabel = result.pageNumber
-                ? ` p.${result.pageNumber}`
-                : "";
-            return `[${index + 1}]${pageLabel} (relevance: ${result.score.toFixed(4)})\n${result.content}`;
+            const pageLine = result.pageNumber
+                ? `Page: ${result.pageNumber}`
+                : "Page: Not available";
+
+            const relevance = `${(result.score * 100).toFixed(2)}%`;
+
+            return [
+                `SOURCE ${index + 1}`,
+                pageLine,
+                `Relevance: ${relevance}`,
+                "",
+                "Content:",
+                result.content,
+            ].join("\n");
         })
         .join("\n\n---\n\n");
 }
