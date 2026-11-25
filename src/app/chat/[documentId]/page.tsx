@@ -9,7 +9,7 @@ type ChatPageProps = {
     params: Promise<{ documentId: string }>;
 };
 
-export default async function ChatPage({ params }: ChatPageProps) {
+export default async function ChatPage({ params }: Readonly<ChatPageProps>) {
     const { documentId } = await params;
     const { userId } = await auth();
 

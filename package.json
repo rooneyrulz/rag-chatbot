@@ -15,6 +15,7 @@
     "@clerk/nextjs": "^6.34.1",
     "@google/genai": "^2.30.0",
     "@hookform/resolvers": "^5.2.2",
+    "@huggingface/inference": "^4.13.32",
     "@langchain/textsplitters": "^1.0.0",
     "@neondatabase/serverless": "^1.0.2",
     "@radix-ui/react-accordion": "^1.2.12",
